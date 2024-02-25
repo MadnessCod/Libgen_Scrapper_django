@@ -4,7 +4,6 @@ from django.db import models
 class MyBaseClass(models.Model):
     is_active = models.BooleanField(default=False, verbose_name='is active')
     created_date = models.DateTimeField(auto_now_add=True, verbose_name='Created date')
-    updated_date = models.DateTimeField(auto_now=True, verbose_name='Updated date')
     is_download = models.BooleanField(default=False, verbose_name='is download')
 
     class Meta:

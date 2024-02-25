@@ -1,4 +1,5 @@
 import os
+import shutil
 import requests
 import wget
 from django.utils import timezone
@@ -18,14 +19,13 @@ def main(phrase):
                 content = BeautifulSoup(text.text, 'html.parser')
                 tr = content.find('table', class_='c').find_all('tr')
                 if len(tr) > 1:
-                    main_path = os.getcwd() + f'\\{phrase}_' + f'{timezone.now()}'
+                    main_path = os.getcwd() + f'\\media\\{phrase}_{timezone.now().date()}'
                     if not os.path.exists(main_path):
                         os.makedirs(main_path, exist_ok=True)
                     scrapper(tr, main_path, counter)
                 else:
-                    if counter == 1:
-                        pass
-                    else:
+                    if counter != 1:
+                        shutil.make_archive(f'{main_path}_', 'zip', main_path)
                         return data_scrape_dict
             else:
                 break
@@ -43,14 +43,12 @@ def main(phrase):
 def scrapper(soup, temp_dir, number):
     global data_scrape_dict
     data_scrape = []
-
     try:
         for i in range(1, len(soup)):
             for m, j in enumerate(soup[i].find_all('td')):
                 if m == 1:
                     data_scrape.append(','.join([element.text for element in j.find_all('a')]))
                     continue
-
                 if m == 2:
                     title = [element.text for element in j.find('a').contents][0]
                     data_scrape.append(title)
@@ -58,14 +56,13 @@ def scrapper(soup, temp_dir, number):
                     temp_url = f'https://libgen.is/{link}'
                     image_downloader(temp_url, temp_dir)
                     continue
-
                 if m == 9:
                     temp_url = j.find('a').get('href')
                     file_downloader(temp_url, temp_dir)
                 data_scrape.append(j.text)
             data_scrape = data_scrape[:9]
             data_scrape.append(temp_dir)
-            data_scrape_dict[f'data{number}'] = data_scrape
+            data_scrape_dict[f'data{number}{i}'] = data_scrape.copy()
             data_scrape.clear()
     except AttributeError as error:
         print(f'AttributeError {error}')
