@@ -6,6 +6,7 @@ from django.utils import timezone
 from bs4 import BeautifulSoup
 
 data_scrape_dict = {}
+filename_tuple = tuple()
 
 
 def main(phrase):
@@ -22,13 +23,16 @@ def main(phrase):
                     main_path = os.getcwd() + f'\\media\\{phrase}_{timezone.now().date()}'
                     if not os.path.exists(main_path):
                         os.makedirs(main_path, exist_ok=True)
+
                     scrapper(tr, main_path, counter)
                 else:
-                    if counter != 1:
+                    if counter == 1:
+                        return 'no result'
+                    else:
                         shutil.make_archive(f'{main_path}_', 'zip', main_path)
                         return data_scrape_dict
             else:
-                break
+                return 'Connection Error'
             counter += 1
     except requests.exceptions.ConnectionError as error:
         print(f'Connection Error {error}')
@@ -73,6 +77,7 @@ def scrapper(soup, temp_dir, number):
 
 
 def image_downloader(link, base_dir):
+    global filename_tuple
     try:
         text = requests.get(link, timeout=10).text
         soup = BeautifulSoup(text, 'html.parser')
@@ -80,11 +85,13 @@ def image_downloader(link, base_dir):
         for i, j in enumerate(tr):
             if i == 1:
                 image_url = f"https://libgen.is/{j.find('a').find('img').get('src')}"
-                wget.download(
+
+                filename = wget.download(
                     url=image_url,
                     out=base_dir,
                     bar=wget.bar_adaptive
                 )
+                filename_tuple += (filename,)
     except requests.exceptions.ConnectionError as error:
         print('error', error)
     except AttributeError as error:
@@ -92,12 +99,15 @@ def image_downloader(link, base_dir):
 
 
 def file_downloader(link, base_dir):
+    global filename_tuple
     try:
         text = requests.get(link, timeout=10).text
         link_file = BeautifulSoup(text, 'html.parser').find('h2').find('a').get('href')
-        wget.download(url=link_file,
-                      out=base_dir,
-                      bar=wget.bar_adaptive
-                      )
+
+        file_name = wget.download(url=link_file,
+                                  out=base_dir,
+                                  bar=wget.bar_adaptive
+                                  )
+        filename_tuple += (file_name,)
     except requests.exceptions.ConnectionError as error:
         print(f'Connection Error {error}')

@@ -31,8 +31,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Trusted Apps:
+    'import_export',
+
     # MyApps:
-    'Blog.apps.BlogConfig'
+    'Blog.apps.BlogConfig',
 ]
 
 MIDDLEWARE = [
