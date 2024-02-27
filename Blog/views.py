@@ -2,7 +2,7 @@ import os
 import shutil
 from django.shortcuts import render, HttpResponse
 from .forms import UserInputForm
-from .models import ScrapperData
+from .models import ScrapperData, Author, Title, Publisher
 from .scraper import main
 from import_export.formats import base_formats
 from .resources import ScrapedDataResource
@@ -20,11 +20,14 @@ def scrape_and_display(request):
                 for key, value in scrape_data.items():
                     if key.startswith('data'):
                         if not ScrapperData.objects.filter(number=value[0]).exists():
+                            author,_ = Author.objects.get_or_create(title=value[1])
+                            title,_ = Title.objects.get_or_create(title=value[2])
+                            publisher,_ = Publisher.objects.get_or_create(title=value[3])
                             ScrapperData.objects.create(
                                 number=value[0],
-                                author=value[1],
-                                title=value[2],
-                                publisher=value[3],
+                                author=author,
+                                title=title,
+                                publisher=publisher,
                                 year=value[4],
                                 page=value[5],
                                 language=value[6],

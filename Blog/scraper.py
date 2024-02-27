@@ -120,4 +120,3 @@ def file_downloader(link, base_dir):
         print(f'Request Error {error}')
     except AttributeError as error:
         print(f'Attribute Error {error}')
-
