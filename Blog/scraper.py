@@ -5,6 +5,7 @@ from django.utils import timezone
 from bs4 import BeautifulSoup
 from celery import shared_task
 
+
 data_scrape_dict = dict()
 
 
