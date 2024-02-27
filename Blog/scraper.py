@@ -1,5 +1,4 @@
 import os
-import shutil
 import requests
 import wget
 from django.utils import timezone
@@ -29,7 +28,6 @@ def main(phrase):
                     if counter == 1:
                         return 'no result'
                     else:
-                        shutil.make_archive(f'{main_path}_', 'zip', main_path)
                         return data_scrape_dict
             else:
                 return 'Connection Error'
