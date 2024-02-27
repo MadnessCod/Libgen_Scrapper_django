@@ -23,5 +23,5 @@ you can find the Prerquistites in requirements.txt
 - clone the project
 - in command prompt or shell type python manage.py runserver
 -  open browser and enter 127.0.0.1:8000/Blog/scrape-and-display
--  enter your phrase and chood the output file type
+-  enter your phrase and choose the output file type
 
