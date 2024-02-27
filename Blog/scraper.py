@@ -1,14 +1,14 @@
 import os
-import shutil
 import requests
 import wget
 from django.utils import timezone
 from bs4 import BeautifulSoup
+from celery import shared_task
 
-data_scrape_dict = {}
-filename_tuple = tuple()
+data_scrape_dict = dict()
 
 
+@shared_task
 def main(phrase):
     global data_scrape_dict
     try:
@@ -29,13 +29,15 @@ def main(phrase):
                     if counter == 1:
                         return 'no result'
                     else:
-                        shutil.make_archive(f'{main_path}_', 'zip', main_path)
                         return data_scrape_dict
             else:
                 return 'Connection Error'
             counter += 1
+
     except requests.exceptions.ConnectionError as error:
         print(f'Connection Error {error}')
+    except requests.RequestException as error:
+        print(f'Request Error {error}')
     except AttributeError as error:
         print(f'Attribute Error {error}')
     except EOFError as error:
@@ -44,9 +46,10 @@ def main(phrase):
         print(f'OSError {error}')
 
 
+@shared_task
 def scrapper(soup, temp_dir, number):
     global data_scrape_dict
-    data_scrape = []
+    data_scrape = list()
     try:
         for i in range(1, len(soup)):
             for m, j in enumerate(soup[i].find_all('td')):
@@ -76,8 +79,9 @@ def scrapper(soup, temp_dir, number):
         print(f'Type error {error}')
 
 
+@shared_task
 def image_downloader(link, base_dir):
-    global filename_tuple
+    """this function download images from url to base_dir directory"""
     try:
         text = requests.get(link, timeout=10).text
         soup = BeautifulSoup(text, 'html.parser')
@@ -85,29 +89,34 @@ def image_downloader(link, base_dir):
         for i, j in enumerate(tr):
             if i == 1:
                 image_url = f"https://libgen.is/{j.find('a').find('img').get('src')}"
-
-                filename = wget.download(
+                wget.download(
                     url=image_url,
                     out=base_dir,
                     bar=wget.bar_adaptive
                 )
-                filename_tuple += (filename,)
     except requests.exceptions.ConnectionError as error:
         print('error', error)
+    except requests.exceptions.RequestException as error:
+        print(f'Request Error {error}')
     except AttributeError as error:
         print(f'Attribute Error {error}')
 
 
+@shared_task
 def file_downloader(link, base_dir):
-    global filename_tuple
+    """thi function downloads files of the book to base_dir directory"""
     try:
         text = requests.get(link, timeout=10).text
         link_file = BeautifulSoup(text, 'html.parser').find('h2').find('a').get('href')
 
-        file_name = wget.download(url=link_file,
-                                  out=base_dir,
-                                  bar=wget.bar_adaptive
-                                  )
-        filename_tuple += (file_name,)
+        wget.download(url=link_file,
+                      out=base_dir,
+                      bar=wget.bar_adaptive
+                      )
     except requests.exceptions.ConnectionError as error:
         print(f'Connection Error {error}')
+    except requests.exceptions.RequestException as error:
+        print(f'Request Error {error}')
+    except AttributeError as error:
+        print(f'Attribute Error {error}')
+
