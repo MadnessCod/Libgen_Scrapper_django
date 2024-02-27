@@ -5,7 +5,6 @@ from django.utils import timezone
 from bs4 import BeautifulSoup
 
 data_scrape_dict = {}
-filename_tuple = tuple()
 
 
 def main(phrase):
