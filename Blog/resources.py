@@ -1,7 +1,8 @@
 from import_export import resources
-from .models import ScrapperData
+
+from .models import Book
 
 
-class ScrapedDataResource(resources.ModelResource):
+class BookResource(resources.ModelResource):
     class Meta:
-        model = ScrapperData
+        model = Book

@@ -1,41 +1,73 @@
 from django.contrib import admin
-from .models import ScrapperData, Title, Author, Publisher
 from django.contrib.admin import register
+
+from import_export.admin import ImportExportModelAdmin
+
+from .models import Author, Publisher, Year, Language, Extension, Book
+
 
 # Register your models here.
 
 
-@register(ScrapperData)
-class ScrapperDataAdmin(admin.ModelAdmin):
-    list_display = ('title', 'is_active', 'created_date', 'path')
-    list_display_links = ('title', 'path')
-    list_filter = ('is_active', 'created_date', 'author')
-    list_editable = ('is_active',)
+@register(Book)
+class BookAdmin(ImportExportModelAdmin):
+    list_display = (
+        'title',
+        'author',
+        'publisher',
+        'year',
+        'type',
+        'language',
+        'created_date',
+        'is_download',
+        'is_active',
+    )
+    list_display_links = ('title', 'language', 'year')
+    list_filter = ('year', 'language', 'type')
+    list_editable = ('is_active', 'is_download')
     search_fields = ('created_date', 'author')
 
 
-@ register(Author)
+@register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'is_active', 'created_date', 'is_download')
-    list_display_links = ('title',)
+    list_display = ('title', 'created_date', 'is_active', 'is_download')
+    list_display_links = ('title', 'created_date',)
     list_filter = ('is_active', 'created_date',)
     list_editable = ('is_active', 'is_download',)
-    search_fields = ('title', 'description',)
-
-
-@register(Title)
-class TitleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'is_active', 'created_date', 'is_download')
-    list_display_links = ('title',)
-    list_filter = ('is_active', 'created_date',)
-    list_editable = ('is_active', 'is_download',)
-    search_fields = ('title', 'description',)
+    search_fields = ('title',)
 
 
 @register(Publisher)
 class PublisherAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'is_active', 'created_date', 'is_download')
+    list_display = ('title', 'created_date', 'is_active', 'is_download')
+    list_display_links = ('title', 'created_date')
+    list_filter = ('is_active', 'created_date',)
+    list_editable = ('is_active', 'is_download',)
+    search_fields = ('title',)
+
+
+@register(Year)
+class YearAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created_date', 'is_active', 'is_download')
     list_display_links = ('title',)
     list_filter = ('is_active', 'created_date',)
     list_editable = ('is_active', 'is_download',)
-    search_fields = ('title', 'description',)
+    search_fields = ('title',)
+
+
+@register(Language)
+class LanguageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created_date', 'is_active', 'is_download')
+    list_display_links = ('title',)
+    list_filter = ('is_active', 'created_date',)
+    list_editable = ('is_active', 'is_download',)
+    search_fields = ('title',)
+
+
+@register(Extension)
+class ExtensionAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created_date', 'is_active', 'is_download')
+    list_display_links = ('title', 'created_date')
+    list_filter = ('is_active', 'created_date',)
+    list_editable = ('is_active', 'is_download',)
+    search_fields = ('title',)
